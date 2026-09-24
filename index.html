@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>バス接近情報</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    background: #f3f5f7;
+    color: #222;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Noto Sans JP",
+        sans-serif;
+}
+
+/* ページ全体 */
+.container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding:
+        22px
+        16px
+        40px;
+}
+
+/* ヘッダー */
+header {
+    margin-bottom: 24px;
+}
+
+.title {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+.subtitle {
+    margin-top: 6px;
+    color: #777;
+    font-size: 13px;
+}
+
+/* セクション */
+.section {
+    margin-top: 24px;
+}
+
+.section:first-of-type {
+    margin-top: 0;
+}
+
+.section-title {
+    margin: 0 0 10px 4px;
+
+    font-size: 15px;
+    font-weight: 700;
+    color: #555;
+}
+
+/* バスカード */
+.bus-card {
+    display: block;
+
+    width: 100%;
+
+    padding: 17px;
+    margin-bottom: 12px;
+
+    border-radius: 18px;
+
+    background: #fff;
+
+    color: inherit;
+    text-decoration: none;
+
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.06);
+
+    -webkit-tap-highlight-color: transparent;
+
+    transition:
+        transform 0.1s ease,
+        box-shadow 0.1s ease;
+}
+
+/* タップ時 */
+.bus-card:active {
+    transform: scale(0.975);
+
+    box-shadow:
+        0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* カード内部 */
+.card-row {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+/* アイコン */
+.icon {
+    width: 44px;
+    height: 44px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+
+    background: #eef1f4;
+
+    font-size: 21px;
+}
+
+/* テキスト */
+.card-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.label {
+    margin-bottom: 4px;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    color: #888;
+}
+
+.route {
+    font-size: 16px;
+    font-weight: 700;
+
+    line-height: 1.45;
+
+    word-break: keep-all;
+}
+
+.arrow {
+    margin: 0 5px;
+    color: #999;
+}
+
+/* 矢印 */
+.open {
+    flex-shrink: 0;
+
+    color: #aaa;
+    font-size: 25px;
+    font-weight: 300;
+}
+
+/* 出勤 */
+.work-card {
+    background: linear-gradient(
+        135deg,
+        #ffffff,
+        #f6faff
+    );
+}
+
+.work-card .icon {
+    background: #e5efff;
+}
+
+/* 退勤 */
+.home-card {
+    background: linear-gradient(
+        135deg,
+        #ffffff,
+        #fff9f1
+    );
+}
+
+.home-card .icon {
+    background: #fff0d8;
+}
+
+/* その他路線 */
+.other-card .icon {
+    background: #eef1f4;
+}
+
+/* 説明 */
+.note {
+    margin-top: 25px;
+
+    text-align: center;
+
+    font-size: 11px;
+    line-height: 1.7;
+
+    color: #999;
+}
+
+/* ダークモード */
+@media (prefers-color-scheme: dark) {
+
+    body {
+        background: #111315;
+        color: #eee;
+    }
+
+    .subtitle,
+    .section-title,
+    .label,
+    .note {
+        color: #999;
+    }
+
+    .bus-card {
+        background: #1b1e21;
+
+        box-shadow:
+            0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .work-card {
+        background: #1b2028;
+    }
+
+    .home-card {
+        background: #211f1b;
+    }
+
+    .icon {
+        background: #292d31;
+    }
+
+    .work-card .icon {
+        background: #24354d;
+    }
+
+    .home-card .icon {
+        background: #44351f;
+    }
+
+    .other-card .icon {
+        background: #292d31;
+    }
+
+    .arrow,
+    .open {
+        color: #777;
+    }
+}
+</style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <!-- ヘッダー -->
+    <header>
+
+        <h1 class="title">
+            🚌 バス接近情報
+        </h1>
+
+        <div class="subtitle">
+            よく使う路線
+        </div>
+
+    </header>
+
+
+    <!-- ========================= -->
+    <!-- 通勤 -->
+    <!-- ========================= -->
+
+    <div class="section">
+
+        <div class="section-title">
+            🏢 通勤
+        </div>
+
+
+        <!-- 出勤 -->
+        <a
+            class="bus-card work-card"
+            href="https://transfer-cloud.navitime.biz/seibubus/approachings?departure-busstop=00111014&arrival-busstop=00111054"
+            target="_blank"
+            rel="noopener"
+        >
+
+            <div class="card-row">
+
+                <div class="icon">
+                    🏢
+                </div>
+
+                <div class="card-content">
+
+                    <div class="label">
+                        出勤
+                    </div>
+
+                    <div class="route">
+                        栗原公園入口
+                        <span class="arrow">→</span>
+                        新座市役所
+                    </div>
+
+                </div>
+
+                <div class="open">
+                    ›
+                </div>
+
+            </div>
+
+        </a>
+
+
+        <!-- 退勤 -->
+        <a
+            class="bus-card home-card"
+            href="https://transfer-cloud.navitime.biz/seibubus/approachings?departure-busstop=00111054&arrival-busstop=00111014"
+            target="_blank"
+            rel="noopener"
+        >
+
+            <div class="card-row">
+
+                <div class="icon">
+                    🏠
+                </div>
+
+                <div class="card-content">
+
+                    <div class="label">
+                        退勤
+                    </div>
+
+                    <div class="route">
+                        新座市役所
+                        <span class="arrow">→</span>
+                        栗原公園入口
+                    </div>
+
+                </div>
+
+                <div class="open">
+                    ›
+                </div>
+
+            </div>
+
+        </a>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- その他 -->
+    <!-- ========================= -->
+
+    <div class="section">
+
+        <div class="section-title">
+            🚏 その他の路線
+        </div>
+
+
+        <!-- 栗原公園入口 → 朝霞台駅 -->
+        <a
+            class="bus-card other-card"
+            href="https://transfer-cloud.navitime.biz/seibubus/approachings?departure-busstop=00111014&arrival-busstop=00111067"
+            target="_blank"
+            rel="noopener"
+        >
+
+            <div class="card-row">
+
+                <div class="icon">
+                    🚃
+                </div>
+
+                <div class="card-content">
+
+                    <div class="label">
+                        行き
+                    </div>
+
+                    <div class="route">
+                        栗原公園入口
+                        <span class="arrow">→</span>
+                        朝霞台駅
+                    </div>
+
+                </div>
+
+                <div class="open">
+                    ›
+                </div>
+
+            </div>
+
+        </a>
+
+
+        <!-- 栗原公園入口 → ひばりヶ丘駅 -->
+        <a
+            class="bus-card other-card"
+            href="https://transfer-cloud.navitime.biz/seibubus/approachings?departure-busstop=00111014&arrival-busstop=00111013"
+            target="_blank"
+            rel="noopener"
+        >
+
+            <div class="card-row">
+
+                <div class="icon">
+                    🚃
+                </div>
+
+                <div class="card-content">
+
+                    <div class="label">
+                        行き
+                    </div>
+
+                    <div class="route">
+                        栗原公園入口
+                        <span class="arrow">→</span>
+                        ひばりヶ丘駅
+                    </div>
+
+                </div>
+
+                <div class="open">
+                    ›
+                </div>
+
+            </div>
+
+        </a>
+
+
+        <!-- 栗原公園入口 → 片山小学校 -->
+        <a
+            class="bus-card other-card"
+            href="https://transfer-cloud.navitime.biz/seibubus/approachings?departure-busstop=00111014&arrival-busstop=00111020"
+            target="_blank"
+            rel="noopener"
+        >
+
+            <div class="card-row">
+
+                <div class="icon">
+                    🏫
+                </div>
+
+                <div class="card-content">
+
+                    <div class="label">
+                        行き
+                    </div>
+
+                    <div class="route">
+                        栗原公園入口
+                        <span class="arrow">→</span>
+                        片山小学校
+                    </div>
+
+                </div>
+
+                <div class="open">
+                    ›
+                </div>
+
+            </div>
+
+        </a>
+
+
+        <!-- 片山小学校 → 栗原公園入口 -->
+        <a
+            class="bus-card other-card"
+            href="https://transfer-cloud.navitime.biz/seibubus/approachings?departure-busstop=00111020&arrival-busstop=00111014"
+            target="_blank"
+            rel="noopener"
+        >
+
+            <div class="card-row">
+
+                <div class="icon">
+                    🏠
+                </div>
+
+                <div class="card-content">
+
+                    <div class="label">
+                        帰り
+                    </div>
+
+                    <div class="route">
+                        片山小学校
+                        <span class="arrow">→</span>
+                        栗原公園入口
+                    </div>
+
+                </div>
+
+                <div class="open">
+                    ›
+                </div>
+
+            </div>
+
+        </a>
+
+    </div>
+
+
+    <!-- フッター -->
+    <div class="note">
+        タップするとバス接近情報が開きます
+    </div>
+
+</div>
+
+</body>
+</html>
